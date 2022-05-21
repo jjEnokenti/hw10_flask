@@ -7,6 +7,8 @@ def get_data():
     Формирует список словарей с информацией по кандидатам из json файла
     :return data:
     """
+
+    # Загрузка данных из json файла
     with open('candidates.json', encoding='utf-8') as inf:
         data = load(inf)
 
@@ -15,14 +17,22 @@ def get_data():
 
 def get_all_candidates():
     """
-    Формирует список имен кандидатов
+    Формирует список кандидатов
     :return names:
     """
-    data = get_data()
-    candidates = [candidate['name'] for candidate in data]
-    names = '\n'.join(candidates)
 
-    return names
+    # Згрузка данных кандидатов из json файла
+    candidates = get_data()
+
+    candidates_list = ''
+
+    # Цикл для формирования строки с дпнными всех кандидатов
+    for candidate in candidates:
+        candidates_list += f"{candidate['id']} {candidate['name']}\n" \
+                           f"{candidate['position']}\n" \
+                           f"{candidate['skills']}\n\n"
+
+    return candidates_list
 
 
 def get_candidate_by_id(user_id):
@@ -31,20 +41,18 @@ def get_candidate_by_id(user_id):
     :param user_id:
     :return candidate_by_id:
     """
-    data = get_data()
-    candidate_by_id = {
-        'name': None,
-        'position': None,
-        'skills': None,
-        'picture': None
-    }
 
+    data = get_data()
+
+    candidate_by_id = ''
+
+    # Цикл для формирования строки с данными кандидата выбранному по id
     for candidate in data:
         if candidate['id'] == user_id:
-            candidate_by_id['name'] = candidate['name']
-            candidate_by_id['position'] = candidate['position']
-            candidate_by_id['skills'] = candidate['skills']
-            candidate_by_id['picture'] = candidate['picture']
+            candidate_by_id += f"<img src={candidate['picture']}>\n" \
+                               f"<pre>{candidate['name']}\n" \
+                               f"{candidate['position']}\n" \
+                               f"{candidate['skills']}</pre>"
 
     return candidate_by_id
 
@@ -55,16 +63,18 @@ def get_candidates_by_skill(skill):
     :param skill:
     :return candidates:
     """
+
     data = get_data()
-    candidates = []
 
+    candidates = ''
+
+    # Цикл для формирования строки с данными о кандидатах по выбранному навыку
     for candidate in data:
-        if skill.lower() in candidate['skills'].lower():
-
-            candidates.append(f"{candidate['name']} -\n"
-                              f"{candidate['position']}\n"
-                              f"{candidate['skills']}")
-
-    candidates = '\n\n'.join(candidates)
+        # Поиск навыка независимо от регистра и разбивание строки с навыками на спиоск
+        # для исключения ошибочных вхождений
+        if skill.lower() in candidate['skills'].lower().split(', '):
+            candidates += f"{candidate['name']} -\n" \
+                          f"{candidate['position']}\n" \
+                          f"{candidate['skills']}\n"
 
     return candidates

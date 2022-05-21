@@ -7,11 +7,13 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def index():
+def all_candidates():
     """
-    Выводит имена кандидатов
+    Выводит всех кандидатов
     :return candidates:
     """
+
+    #
     candidates = get_all_candidates()
 
     return f"<pre>{candidates}</pre>"
@@ -22,12 +24,14 @@ def get_candidate_id(uid):
     """
     Выводит всю информацию кандидата по id
     """
+
+    #
     candidate = get_candidate_by_id(uid)
 
-    return f"<img src={candidate['picture']}>\n" \
-           f"<pre>{candidate['name']} -\n" \
-           f"{candidate['position']}\n" \
-           f"{candidate['skills']}<pre>"
+    if candidate:
+        return candidate
+
+    return "<pre>Такого кандидата нет</pre>"
 
 
 @app.route("/skills/<skill>/")
@@ -37,9 +41,14 @@ def get_candidate_skill(skill):
     :param skill:
     :return candidates:
     """
+
+    #
     candidates = get_candidates_by_skill(skill)
 
-    return f"<pre>{candidates}</pre>"
+    if candidates:
+        return f"<pre>{candidates}</pre>"
+
+    return f'Кандидатов с навыком "{skill}" нет'
 
 
 if __name__ == '__main__':
